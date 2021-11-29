@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tabletop">#FFA06527</color>
+    <color name="tableedge">#FF75430F</color>
+    <color name="tableleg">#FF4D2800</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="pendulum_color">#ff0</color>
+    <color name="grass_placeholder">#FF008500</color>
+    <color name="sky_placeholder">#FF15B8AB</color>
+    <color name="night">#FF01002F</color>
+</resources>
