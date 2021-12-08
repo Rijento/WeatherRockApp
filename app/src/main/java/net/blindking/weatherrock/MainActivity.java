@@ -1,12 +1,26 @@
 package net.blindking.weatherrock;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+
+import com.android.volley.VolleyError;
+
+import net.blindking.weatherrock.controller.InfoController;
+import net.blindking.weatherrock.controller.MapController;
 import net.blindking.weatherrock.controller.WindowController;
 import net.blindking.weatherrock.model.OpenWeatherAPI;
 import net.blindking.weatherrock.model.Weather;
@@ -19,6 +33,8 @@ public class MainActivity extends Activity {
     private View pendulum;
     private OpenWeatherAPI openWeatherAPI;
     private WindowController windowController;
+    private InfoController infoController;
+    private MapController mapController;
     private Weather weather;
 
     @Override
@@ -35,6 +51,20 @@ public class MainActivity extends Activity {
 
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.swinging);
 
+        View book = findViewById(R.id.infoBook);
+        TextView dialog = findViewById(R.id.dialog);
+
+        infoController = new InfoController(dialog, weather, getString(R.string.infoBookContents), getString(R.string.rockDisplayText));
+
+        book.setOnClickListener(v -> {
+            infoController.bookClicked();
+        });
+
+        pendulum.setOnClickListener(v -> {
+
+            infoController.rockClicked();
+        });
+
         ArrayList<View> clouds = new ArrayList<>();
         clouds.add(findViewById(R.id.cloud1));
         clouds.add(findViewById(R.id.cloud2));
@@ -47,23 +77,43 @@ public class MainActivity extends Activity {
         clouds.add(findViewById(R.id.cloud9));
         clouds.add(findViewById(R.id.cloud10));
 
-        windowController = new WindowController(pendulum, rock, animation, clouds, weather);
+        View fog = findViewById(R.id.fog);
 
+        windowController = new WindowController(pendulum, rock, fog, animation, clouds, weather);
         openWeatherAPI = new OpenWeatherAPI(this, windowController);
+
+        View map = findViewById(R.id.map);
+        View zipDialog = findViewById(R.id.zipCodeDialog);
+        EditText newZipCode = findViewById(R.id.editZipCode);
+        Button enterZipCode = findViewById(R.id.enterZipCode);
+        TextView currentZipCode = findViewById(R.id.currentZipCode);
+        View zipExitButton = findViewById(R.id.zipExitButton);
+        mapController = new MapController(this, map, zipDialog, newZipCode, enterZipCode, currentZipCode, openWeatherAPI, zipExitButton);
+    }
+
+    public void requestPermissions() {
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, 25);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 25:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }  else {
+                    // FAILURE
+                }
+                return;
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            openWeatherAPI.getWeatherInformation();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
+        openWeatherAPI.getWeatherInformation(this.mapController.getZipCode());
+
     }
 
     @Override

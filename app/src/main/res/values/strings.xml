@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">WeatherRock</string>
     <string name="description"> This pendulum animation is made with a rotation pivoted at x = 50%, y = 0%. The physics isn\'t quite right since the motion is linear, but it illustrates a pivoted rotation pretty well. </string>
+    <string name="infoBookContents">Riley\'s Weather Rock\n
+Touch the rock for more detailed info.\n
+Set the Location using the map.\n
+At A Glance:\n
+Rock is wet - Rain\n
+Rock is swinging - windy (1 swing/min = 1 mph)\n
+Rock is white on top - Snow\n
+Rock is blurry - Fog\n
+Clouds in sky - Cloudy
+    </string>
+    <string name="rockDisplayText">
+The rock is swinging %.2f times per minute\n
+The rock feels like %.2f \u00B0F
+    </string>
 </resources>

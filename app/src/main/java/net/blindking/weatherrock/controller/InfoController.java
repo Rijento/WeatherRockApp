@@ -5,13 +5,13 @@ import android.widget.TextView;
 
 import net.blindking.weatherrock.model.Weather;
 
-public class DialogController {
+public class InfoController {
     private TextView dialog;
     private Weather weather;
     private String infoBookString;
     private String rockString;
 
-    public DialogController(TextView dialog, Weather weather, String infoBookString, String rockString) {
+    public InfoController(TextView dialog, Weather weather, String infoBookString, String rockString) {
         this.dialog = dialog;
         this.weather = weather;
         this.infoBookString = infoBookString;

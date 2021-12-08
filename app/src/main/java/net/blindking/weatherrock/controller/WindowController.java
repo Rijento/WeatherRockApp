@@ -27,14 +27,16 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class WindowController implements Response.Listener<String> {
     private View pendulum;
+    private View fog;
     private ImageView rock;
     private Animation animation;
     private ArrayList<View> clouds;
     Weather weather;
 
-    public WindowController(View pendulum, ImageView rock, Animation animation, ArrayList<View> clouds, Weather weather) {
+    public WindowController(View pendulum, ImageView rock, View fog, Animation animation, ArrayList<View> clouds, Weather weather) {
         this.pendulum = pendulum;
         this.rock = rock;
+        this.fog = fog;
         this.animation = animation;
         this.clouds = clouds;
         this.weather = weather;
@@ -64,9 +66,8 @@ public class WindowController implements Response.Listener<String> {
         }
         //TODO: Do stuff with position of sun/moon
 
-        Node temperatureData = parsed.getElementsByTagName("temperature").item(0);
+        Node temperatureData = parsed.getElementsByTagName("feels_like").item(0);
         weather.setTemperature(Double.parseDouble(temperatureData.getAttributes().getNamedItem("value").getNodeValue()));
-        // TODO: Do stuff with temperature
 
         Node windData = parsed.getElementsByTagName("wind").item(0).getChildNodes().item(0);
         weather.setWindSpeed(Double.parseDouble(windData.getAttributes().getNamedItem("value").getNodeValue()));
@@ -74,11 +75,12 @@ public class WindowController implements Response.Listener<String> {
             long swingSpeed = Math.round(60.0/weather.getWindSpeed() * 1000/2.0);
             animation.setDuration(swingSpeed);
             pendulum.startAnimation(animation);
+        } else {
+            pendulum.clearAnimation();
         }
 
         Node cloudData = parsed.getElementsByTagName("clouds").item(0);
         weather.setCloudiness((int) Math.floor(Integer.parseInt(cloudData.getAttributes().getNamedItem("value").getNodeValue()) / 10.0));
-        // TODO: Do stuff with cloudiness
         for (int i = 0; i < 10; i++) {
             if (weather.getCloudiness() > i) {
                 clouds.get(i).setVisibility(View.VISIBLE);
@@ -91,11 +93,13 @@ public class WindowController implements Response.Listener<String> {
 
         int visiblityData = Integer.parseInt(parsed.getElementsByTagName("visibility")
                 .item(0).getAttributes().getNamedItem("value").getNodeValue());
-        if (visiblityData >= 10000) {
-            weather.setVisibility(0.0); // This value will be used to set the opacity of the fog layer.
-        } else {
-            weather.setVisibility(1/(visiblityData/100));
+        weather.setVisibility(1.0-(visiblityData / 10000.0));
+        if (weather.getVisibility() > 0.75) {
+            weather.setVisibility(0.75);
         }
+        fog.setAlpha((float) weather.getVisibility());
+
+
 
         NamedNodeMap precipitationData = parsed.getElementsByTagName("precipitation").item(0).getAttributes();
 
